@@ -1,4 +1,4 @@
-require 'sinatra/base'
+require 'sinatra'
 require 'memcachier'
 require "dalli"
 require "rack-cache"
@@ -59,8 +59,12 @@ class CoinCORS < Sinatra::Base
       buy, sell = REDIS.mget "#{what}:buy", "#{what}:sell"
     end
 
+    # Headers.
+    response['Access-Control-Allow-Origin'] = '*'
     cache_control :public, max_age: EXPIRE_TIME / 2
     content_type :json
+
+    # Data.
     "{'sell': #{sell}, 'buy': #{buy}}"
   end
 end
