@@ -65,6 +65,6 @@ class CoinCORS < Sinatra::Base
     content_type :json
 
     # Data.
-    "{'sell': #{sell}, 'buy': #{buy}}"
+    "{\"sell\": #{sell}, \"buy\": #{buy}}"
   end
 end
