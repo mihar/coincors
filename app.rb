@@ -45,12 +45,15 @@ class CoinCORS < Sinatra::Base
   end
 
   def fetch what
-    unless REDIS.exists "#{what}:buy"
+    unless REDIS.exists "#{what}:fresh"
+      # If we're to fetch this here, signal we fresh again, 
+      # so concurrent peeps can access this instantly.
+      REDIS.set "#{what}:fresh", 1
+      REDIS.expire "#{what}:fresh", EXPIRE_TIME
+
       # Fetch new stuff.
       buy, sell = send "#{what}_fetch"
       REDIS.mset "#{what}:buy", buy, "#{what}:sell", sell
-      REDIS.expire "#{what}:buy", EXPIRE_TIME
-      REDIS.expire "#{what}:sell", EXPIRE_TIME
     else
       # Fetch cached.
       buy, sell = REDIS.mget "#{what}:buy", "#{what}:sell"
